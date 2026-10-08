@@ -1,0 +1,820 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Stock Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --fg: #e6edf3;
+    --fg2: #8b949e;
+    --fg3: #6e7681;
+    --accent: #388bfd;
+    --accent2: #1f6feb;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #f0883e;
+    --red: #f85149;
+    --green-bg: rgba(63,185,80,0.1);
+    --yellow-bg: rgba(210,153,34,0.1);
+    --orange-bg: rgba(240,136,62,0.1);
+    --red-bg: rgba(248,81,73,0.1);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    padding: 0;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--fg2);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .api-badge {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--fg2);
+    background: var(--bg3);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .api-badge:hover { border-color: var(--accent); color: var(--fg); }
+  .api-badge.set { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+
+  /* MAIN */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* SEARCH */
+  .search-section { margin-bottom: 32px; }
+  .search-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fg2);
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .search-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--fg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--fg3); }
+  .btn-analyze {
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .btn-analyze:hover { background: var(--accent); }
+  .btn-analyze:disabled { background: var(--bg3); color: var(--fg3); cursor: default; }
+
+  /* CHIPS */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--fg2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--fg); background: rgba(56,139,253,0.08); }
+
+  /* STATUS */
+  .status {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--fg2);
+  }
+  .status-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-text { font-size: 14px; }
+
+  /* ERROR */
+  .error-box {
+    background: var(--red-bg);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: var(--red);
+    font-size: 13px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  /* RESULT */
+  .result { display: none; }
+  .result.show { display: block; }
+
+  /* SCORE HERO */
+  .score-hero {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  .score-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid;
+    flex-shrink: 0;
+  }
+  .score-num {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .score-denom { font-size: 12px; color: var(--fg2); margin-top: 2px; }
+  .company-name { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .company-meta { font-size: 12px; color: var(--fg2); margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  .verdict-text { font-size: 14px; color: var(--fg2); margin-top: 10px; line-height: 1.6; }
+
+  /* SW lists */
+  .sw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .sw-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .sw-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .sw-title.s { color: var(--green); }
+  .sw-title.r { color: var(--red); }
+  .sw-item {
+    font-size: 13px;
+    color: var(--fg2);
+    padding: 5px 0;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--bg3);
+  }
+  .sw-item:last-child { border-bottom: none; }
+  .sw-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .sw-card.strengths .sw-item::before { background: var(--green); }
+  .sw-card.risks .sw-item::before { background: var(--red); }
+
+  /* METRICS */
+  .metrics-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--fg2);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 10px;
+    transition: border-color 0.15s;
+  }
+  .metric-card:hover { border-color: var(--fg3); }
+  .metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .metric-name { font-size: 14px; font-weight: 600; }
+  .metric-right { display: flex; align-items: center; gap: 10px; }
+  .metric-value {
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg2);
+    background: var(--bg3);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .metric-badge {
+    font-size: 13px;
+    font-weight: 700;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar-track {
+    height: 5px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(.16,1,.3,1);
+  }
+  .metric-sub { font-size: 12px; color: var(--fg2); margin-bottom: 8px; }
+  .metric-comment { font-size: 13px; color: var(--fg2); line-height: 1.6; }
+  .data-rows { margin-top: 12px; }
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 12px;
+    border-bottom: 1px solid var(--bg3);
+  }
+  .data-row:last-child { border-bottom: none; }
+  .data-label { color: var(--fg3); }
+  .data-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+  /* COLOR utils */
+  .c-green { color: var(--green); }
+  .c-yellow { color: var(--yellow); }
+  .c-orange { color: var(--orange); }
+  .c-red { color: var(--red); }
+  .bg-green { background: var(--green-bg); }
+  .bg-yellow { background: var(--yellow-bg); }
+  .bg-orange { background: var(--orange-bg); }
+  .bg-red { background: var(--red-bg); }
+  .border-green { border-color: var(--green); }
+  .border-yellow { border-color: var(--yellow); }
+  .border-orange { border-color: var(--orange); }
+  .border-red { border-color: var(--red); }
+
+  /* API MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 24px;
+  }
+  .modal-overlay[hidden] { display: none; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+  }
+  .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: var(--fg2); margin-bottom: 20px; line-height: 1.6; }
+  .modal a { color: var(--accent); text-decoration: none; }
+  .modal a:hover { text-decoration: underline; }
+  .modal-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg);
+    outline: none;
+    margin-bottom: 16px;
+    transition: border-color 0.15s;
+  }
+  .modal-input:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-save {
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-save:hover { background: var(--accent); }
+  .btn-cancel {
+    background: var(--bg3);
+    color: var(--fg2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-cancel:hover { color: var(--fg); }
+
+  /* NOTE: no API key info box */
+  .no-key-box {
+    background: rgba(56,139,253,0.08);
+    border: 1px solid var(--accent2);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+  }
+  .no-key-box h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--accent); }
+  .no-key-box p { font-size: 13px; color: var(--fg2); line-height: 1.7; }
+  .no-key-box code {
+    background: var(--bg3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--fg);
+  }
+  .no-key-box .btn-set-key {
+    margin-top: 14px;
+    display: inline-block;
+    background: var(--accent2);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .no-key-box .btn-set-key:hover { background: var(--accent); }
+
+  @media (max-width: 600px) {
+    .header { padding: 12px 16px; }
+    .main { padding: 20px 16px 48px; }
+    .sw-grid { grid-template-columns: 1fr; }
+    .score-hero { grid-template-columns: 1fr; gap: 16px; }
+    .score-circle { margin: 0 auto; }
+    .metric-header { flex-wrap: wrap; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <div class="logo-text">Stock Analyst</div>
+      <div class="logo-sub">Analyse financière 7 critères</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="api-badge" id="apiBadge" onclick="openModal()">⚙ Clé API</button>
+  </div>
+</div>
+
+<!-- MODAL API KEY -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal">
+    <h2>Clé API Anthropic</h2>
+    <p>
+      Entrez votre clé API pour activer l'analyse. Elle sera stockée localement dans votre navigateur et ne sera jamais envoyée ailleurs.<br><br>
+      Obtenez une clé sur <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>.
+    </p>
+    <input class="modal-input" id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveApiKey()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- NO KEY BOX -->
+  <div class="no-key-box" id="noKeyBox" hidden>
+    <h3>🔑 Clé API requise</h3>
+    <p>
+      Cet outil appelle directement l'API Anthropic pour analyser les entreprises. Vous avez besoin d'une clé API personnelle.<br><br>
+      1. Créez un compte sur <strong>console.anthropic.com</strong><br>
+      2. Allez dans <strong>Settings → API Keys</strong> et créez une clé (<code>sk-ant-…</code>)<br>
+      3. Entrez-la ci-dessous — elle reste stockée dans votre navigateur uniquement.
+    </p>
+    <button class="btn-set-key" onclick="openModal()">Entrer ma clé API</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-section">
+    <div class="search-label">Entreprise à analyser</div>
+    <div class="search-row">
+      <input
+        class="search-input"
+        id="searchInput"
+        type="text"
+        placeholder="ex: Apple, LVMH, Microsoft, Airbus…"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">Analyser</button>
+    </div>
+    <div class="chips">
+      <span class="chip" onclick="pick('Apple')">AAPL</span>
+      <span class="chip" onclick="pick('Microsoft')">MSFT</span>
+      <span class="chip" onclick="pick('NVIDIA')">NVDA</span>
+      <span class="chip" onclick="pick('Alphabet')">GOOGL</span>
+      <span class="chip" onclick="pick('Meta')">META</span>
+      <span class="chip" onclick="pick('Amazon')">AMZN</span>
+      <span class="chip" onclick="pick('Adobe')">ADBE</span>
+      <span class="chip" onclick="pick('Booking Holdings')">BKNG</span>
+      <span class="chip" onclick="pick('LVMH')">MC.PA</span>
+      <span class="chip" onclick="pick('Legrand')">LR.PA</span>
+      <span class="chip" onclick="pick('Safran')">SAF.PA</span>
+      <span class="chip" onclick="pick('Hermès')">RMS.PA</span>
+      <span class="chip" onclick="pick('L\'Oréal')">OR.PA</span>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-box" id="errorBox" hidden></div>
+
+  <!-- LOADING -->
+  <div class="status" id="statusBox" hidden>
+    <div class="status-spinner"></div>
+    <div class="status-text" id="statusText">Analyse en cours…</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="resultBox"></div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'stock_analyst_api_key';
+
+// --- STATE ---
+let apiKey = '';
+
+function loadKey() {
+  try { apiKey = localStorage.getItem(STORAGE_KEY) || ''; } catch(e) { apiKey = ''; }
+  updateBadge();
+  if (!apiKey) {
+    document.getElementById('noKeyBox').hidden = false;
+  }
+}
+
+function updateBadge() {
+  const badge = document.getElementById('apiBadge');
+  if (apiKey) {
+    badge.textContent = '✓ API ' + apiKey.slice(0,8) + '…';
+    badge.className = 'api-badge set';
+    document.getElementById('noKeyBox').hidden = true;
+  } else {
+    badge.textContent = '⚙ Clé API';
+    badge.className = 'api-badge';
+  }
+}
+
+function openModal() {
+  document.getElementById('apiKeyInput').value = apiKey;
+  document.getElementById('modalOverlay').hidden = false;
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 50);
+}
+function closeModal() { document.getElementById('modalOverlay').hidden = true; }
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val) return;
+  apiKey = val;
+  try { localStorage.setItem(STORAGE_KEY, val); } catch(e) {}
+  updateBadge();
+  closeModal();
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Enter key in modal
+document.getElementById('apiKeyInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveApiKey();
+});
+
+// Enter key in search
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') analyze();
+});
+
+function pick(name) {
+  document.getElementById('searchInput').value = name;
+  analyze();
+}
+
+// --- SCORE COLORS ---
+function scoreColor(n) {
+  if (n >= 8) return 'green';
+  if (n >= 6) return 'yellow';
+  if (n >= 4) return 'orange';
+  return 'red';
+}
+
+// --- METRIC CONFIG ---
+const METRIC_LABELS = {
+  revenueGrowth:     'Croissance du CA',
+  fcfGrowth:         'Croissance du FCF',
+  roic:              'ROIC',
+  netDebt:           'Dette nette',
+  fcfLevel:          'Niveau du FCF',
+  sharesOutstanding: 'Nb actions en circulation',
+  fcfMargin:         'Marge FCF',
+};
+
+// --- RENDER ---
+function render(data) {
+  const sc = scoreColor(data.globalScore);
+  let html = '';
+
+  // HERO
+  html += `
+  <div class="score-hero">
+    <div class="score-circle border-${sc} bg-${sc}">
+      <span class="score-num c-${sc}">${data.globalScore.toFixed(1)}</span>
+      <span class="score-denom">/10</span>
+    </div>
+    <div>
+      <div class="company-name">${data.company}</div>
+      <div class="company-meta">${data.ticker} · ${data.exchange} · ${data.fiscalYear}</div>
+      <div class="verdict-text">${data.globalVerdict}</div>
+    </div>
+  </div>`;
+
+  // STRENGTHS / RISKS
+  html += `<div class="sw-grid">`;
+  html += `<div class="sw-card strengths"><div class="sw-title s">✓ Points forts</div>`;
+  (data.strengths||[]).forEach(s => { html += `<div class="sw-item">${s}</div>`; });
+  html += `</div>`;
+  html += `<div class="sw-card risks"><div class="sw-title r">⚠ Risques</div>`;
+  (data.risks||[]).forEach(r => { html += `<div class="sw-item">${r}</div>`; });
+  html += `</div></div>`;
+
+  // METRICS
+  html += `<div class="metrics-title">Analyse par critère</div>`;
+  Object.entries(METRIC_LABELS).forEach(([key, label]) => {
+    const m = (data.metrics||{})[key];
+    if (!m) return;
+    const c = scoreColor(m.note);
+    const pct = Math.round((m.note / 10) * 100);
+    html += `
+    <div class="metric-card">
+      <div class="metric-header">
+        <div class="metric-name">${label}</div>
+        <div class="metric-right">
+          ${m.value ? `<span class="metric-value">${m.value}</span>` : ''}
+          <div class="metric-badge bg-${c} c-${c}">${m.note}</div>
+        </div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%; background:var(--${c})"></div>
+      </div>
+      ${m.sub ? `<div class="metric-sub">${m.sub}</div>` : ''}
+      ${m.comment ? `<div class="metric-comment">${m.comment}</div>` : ''}
+      ${m.data && m.data.length ? `
+      <div class="data-rows">
+        ${m.data.map(d => `
+          <div class="data-row">
+            <span class="data-label">${d.year||d.label||d.k||''}</span>
+            <span class="data-val c-${scoreColor(5)}">${d.value||d.v||d.val||''}</span>
+          </div>`).join('')}
+      </div>` : ''}
+    </div>`;
+  });
+
+  const box = document.getElementById('resultBox');
+  box.innerHTML = html;
+  box.className = 'result show';
+}
+
+// --- ANALYZE ---
+async function analyze() {
+  const company = document.getElementById('searchInput').value.trim();
+  if (!company) return;
+
+  if (!apiKey) {
+    openModal();
+    return;
+  }
+
+  // Reset UI
+  document.getElementById('errorBox').hidden = true;
+  document.getElementById('resultBox').className = 'result';
+  document.getElementById('statusBox').hidden = false;
+  document.getElementById('statusText').textContent = `Analyse de ${company} en cours…`;
+  document.getElementById('analyzeBtn').disabled = true;
+
+  const SYSTEM = `Tu es un analyste financier expert. Quand on te donne le nom d'une entreprise cotée, tu réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks, sans texte autour). Le JSON doit avoir exactement cette structure :
+{
+  "company": "Nom complet de l'entreprise",
+  "ticker": "TICKER",
+  "exchange": "Bourse (ex: NASDAQ, NYSE, Euronext Paris)",
+  "fiscalYear": "FY2024",
+  "globalScore": 7.5,
+  "globalVerdict": "Synthèse en 2-3 phrases",
+  "strengths": ["point fort 1", "point fort 2", "point fort 3"],
+  "risks": ["risque 1", "risque 2"],
+  "metrics": {
+    "revenueGrowth": {
+      "note": 8,
+      "value": "+12% CAGR 3 ans",
+      "sub": "Tendance de la croissance du chiffre d'affaires",
+      "data": [{"year": "FY2022", "value": "19.2B$"}, {"year": "FY2023", "value": "21.5B$"}, {"year": "FY2024", "value": "23.8B$"}],
+      "comment": "Commentaire analytique sur la métrique"
+    },
+    "fcfGrowth": {"note": 7, "value": "+8% CAGR", "sub": "...", "data": [], "comment": "..."},
+    "roic": {"note": 9, "value": "28%", "sub": "Return on Invested Capital", "data": [], "comment": "..."},
+    "netDebt": {"note": 6, "value": "2.1x EBITDA", "sub": "Dette nette / EBITDA", "data": [], "comment": "..."},
+    "fcfLevel": {"note": 8, "value": "5.2B$", "sub": "Free Cash Flow absolu", "data": [], "comment": "..."},
+    "sharesOutstanding": {"note": 9, "value": "-2.3%/an", "sub": "Variation annuelle du nombre d'actions", "data": [], "comment": "..."},
+    "fcfMargin": {"note": 8, "value": "22%", "sub": "FCF / Chiffre d'affaires", "data": [], "comment": "..."}
+  }
+}
+Notes: 1-10. sharesOutstanding note ≥8 si ≤0%, note 5-6 si +1-3%, note <4 si >3%. ROIC note ≥8 si >15%, note 5-7 si 8-15%, note ≤4 si <8%. Sois précis avec les chiffres réels les plus récents disponibles (FY2024 ou dernières données).`;
+
+  const USER = `Analyse financière complète de : ${company}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 2000,
+        system: SYSTEM,
+        messages: [{ role: 'user', content: USER }],
+      }),
+    });
+
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Erreur HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '';
+
+    // Extract JSON
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Réponse invalide — JSON non trouvé dans la réponse.');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    document.getElementById('statusBox').hidden = true;
+    render(parsed);
+
+  } catch (err) {
+    document.getElementById('statusBox').hidden = true;
+    const errBox = document.getElementById('errorBox');
+    errBox.hidden = false;
+
+    if (err.message.includes('x-api-key') || err.message.includes('401') || err.message.includes('authentication')) {
+      errBox.innerHTML = `<strong>Clé API invalide.</strong> Vérifiez que votre clé commence par <code>sk-ant-</code> et qu'elle est bien copiée depuis <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:inherit;text-decoration:underline">console.anthropic.com</a>.`;
+    } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      errBox.innerHTML = `<strong>Erreur réseau.</strong> Vérifiez votre connexion internet. Si le problème persiste, l'API Anthropic est peut-être temporairement inaccessible depuis votre navigateur (CORS).`;
+    } else {
+      errBox.textContent = `Erreur : ${err.message}`;
+    }
+  } finally {
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+}
+
+// --- INIT ---
+loadKey();
+</script>
+</body>
+</html>
+
+</body></html>
